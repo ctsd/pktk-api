@@ -6,7 +6,7 @@ class CreateUsers < ActiveRecord::Migration
       t.string :messenger_id, null: false
       t.string :lat, default: nil
       t.string :long, default: nil
-      t.boolean :on, default: 0
+      t.boolean :on, default: false
 
       t.timestamps null: false
     end
