@@ -2,6 +2,15 @@ class ApiController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
 
+  before_action :require_token
+
+  def require_token
+    unless params.require('verify_token') == "5ar8FHgT9s67dArgs59X"
+      render json: "Forbidden", status: 401
+      exit
+    end
+  end
+
   def getUser
     id = params.require(:messenger_id)
     @user = User.find_by messenger_id: id
