@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
+
+  get 'user' => 'api#getUser'
+  post 'user' => 'api#createUser'
+  post 'location' => 'api#postLocation'
+  post 'message' => 'api#postMessage'
+  post 'switch' => 'api#switchPKTK'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
