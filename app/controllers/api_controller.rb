@@ -72,6 +72,8 @@ class ApiController < ActionController::Base
     @user = User.find_by messenger_id: id
     if @user == nil
       render json: { message: "User not found", status: 404 }, status: 404
+    elsif @user.on == false
+      render json: { message: "PKTK not switched on", status: 402 }, status: 402
     else
 
       @message = Message.new(json_params.permit(:text))
@@ -84,20 +86,6 @@ class ApiController < ActionController::Base
         users = User.within(0.5, :origin => @user).where(on: true).where.not(id: @user.id)
 
         users.each do |u|
-          # uri = URI('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAPiD2ExLylWAvJj4TQ6xzY6D7ASZArYHYMm2y8dygEXIOLCJblBhIFSQpnMDDqAyIOmKq8thcLKEUdY3X3iU2vxhzMknGTgukCnZB4ZAGypJ8X1GKZCFe9OY27rFaNDOk1SGBfxT4rY4iWPOHhbo0QRcvmhQZDZD')
-          # req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
-          # req.body = {
-          #   recipient: {
-          #     id: u.messenger_id
-          #   },
-          #   message: {
-          #   	text: @user.name + ": " + @message.text
-          #   }
-          # }.to_json
-          # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-          #   http.request(req)
-          # end
-
           data = {
             recipient: {
               id: u.messenger_id
