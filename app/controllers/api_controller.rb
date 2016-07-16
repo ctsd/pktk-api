@@ -94,7 +94,7 @@ class ApiController < ActionController::Base
             	text: @user.name + ": " + @message.text
             }
           }
-          uri = URI.parse('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAJqUxtENYRdQR7YqY9yd5ox0DTKF1t1a3g5YAJxn1XZCPKrgTXzeMZARZAt15ZBMcWTl7yUwtcM7ERdjmBxRqNV1mQeZAmrsaDCscrGZBsdV17i1BOWGEleYlKC9BHO5nhTqMuWy98Vhs0JSLqRRgeTYipKAHYpgZDZD')
+          uri = URI.parse('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAH6xReB9TG4DFDvAlmYxwmcjZBPFqXNyFsdPrNixqlOznAMOHbQAu94fGIZBBUpZAJ0KCRONQXHxpx2yBv06d0fcmtPZB5Wgt9OovW18e4ZB3YGDgKDMKZA6uvMIJhemoC4iWZA5f3ZBgdAEkK8mFGOtW8BPtqLFFwZDZD')
           # x = Net::HTTP.post_form(uri, data)
           req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
           req.body = data.to_json
