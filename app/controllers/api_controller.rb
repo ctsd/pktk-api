@@ -26,7 +26,7 @@ class ApiController < ActionController::Base
     data_parsed = JSON.parse(information)
     json_params = ActionController::Parameters.new(data_parsed)
 
-    prms = json_params.permit(:messenger_id, :name, :team, :lat, :long)
+    prms = json_params.permit(:messenger_id, :name, :team, :lat, :lng)
 
     @user = User.new(prms)
 
@@ -49,7 +49,7 @@ class ApiController < ActionController::Base
       render json: { message: "User not found", status: 404 }, status: 404
     else
 
-      prms = json_params.permit(:lat, :long)
+      prms = json_params.permit(:lat, :lng)
       @user.update_attributes(prms)
 
       if @user.save()
@@ -76,10 +76,47 @@ class ApiController < ActionController::Base
 
       @message = Message.new(json_params.permit(:text))
       @message.lat = @user.lat
-      @message.long = @user.long
+      @message.long = @user.lng
       @message.user_id = @user.id
 
       if @message.save()
+
+        users = User.within(0.5, :origin => @user).where(on: true).where.not(id: @user.id)
+
+        users.each do |u|
+          # uri = URI('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAPiD2ExLylWAvJj4TQ6xzY6D7ASZArYHYMm2y8dygEXIOLCJblBhIFSQpnMDDqAyIOmKq8thcLKEUdY3X3iU2vxhzMknGTgukCnZB4ZAGypJ8X1GKZCFe9OY27rFaNDOk1SGBfxT4rY4iWPOHhbo0QRcvmhQZDZD')
+          # req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
+          # req.body = {
+          #   recipient: {
+          #     id: u.messenger_id
+          #   },
+          #   message: {
+          #   	text: @user.name + ": " + @message.text
+          #   }
+          # }.to_json
+          # res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+          #   http.request(req)
+          # end
+
+          data = {
+            recipient: {
+              id: u.messenger_id
+            },
+            message: {
+            	text: @user.name + ": " + @message.text
+            }
+          }
+          uri = URI.parse('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAJqUxtENYRdQR7YqY9yd5ox0DTKF1t1a3g5YAJxn1XZCPKrgTXzeMZARZAt15ZBMcWTl7yUwtcM7ERdjmBxRqNV1mQeZAmrsaDCscrGZBsdV17i1BOWGEleYlKC9BHO5nhTqMuWy98Vhs0JSLqRRgeTYipKAHYpgZDZD')
+          # x = Net::HTTP.post_form(uri, data)
+          req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
+          req.body = data.to_json
+          res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') {|http| http.request req}
+          puts res.body
+          puts u.messenger_id
+          puts data.to_json
+
+        end
+
         render json: @message, status: 200
       else
         render json: { message: "Failed", status: 400 }, status: 400
@@ -102,9 +139,10 @@ class ApiController < ActionController::Base
     else
 
       @user.on = json_params.require(:status)
-
       if @user.save()
-        render json: @user, status: 200
+        users_zone = User.within(0.5, :origin => @user).where.not(id: @user.id).length
+        users_online = User.within(0.5, :origin => @user).where(on: true).where.not(id: @user.id).length
+        render json: { user: @user, zone: { online: users_online, all: users_zone } }, status: 200
       else
         render json: { message: "Failed", status: 400 }, status: 400
       end
