@@ -5,7 +5,7 @@ class ApiController < ActionController::Base
   before_action :require_token
 
   def require_token
-    unless params.require('verify_token') == "5ar8FHgT9s67dArgs59X"
+    unless params.require('verify_token') == "__INSERT_VERIFY_TOKEN__"
       render json: "Forbidden", status: 401
       exit
     end
@@ -94,7 +94,7 @@ class ApiController < ActionController::Base
             	text: @user.name + ": " + @message.text
             }
           }
-          uri = URI.parse('https://graph.facebook.com/v2.6/me/messages?access_token=EAAKWDWwxejsBAF9WE7ILZCNEJk64NQAInIWuh9Y6gcZBau3Pv7ZBLATFG4HWt2NeRFdplUUXB4CvLE2bjSCNvElIULCQoFZB9zT6Sub72CLZBlAlQWFOoZCWl7RprVNrF8Geet7c3LgXwb8kBZCL7zCOIzsdZCQw6C8PJ4BOPcwn3gZDZD')
+          uri = URI.parse('https://graph.facebook.com/v2.6/me/messages?access_token=__INSERT_ACCESS_TOKEN__')
           # x = Net::HTTP.post_form(uri, data)
           req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
           req.body = data.to_json
